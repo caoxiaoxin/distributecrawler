@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 /**
- * ·Ö²¼Ê½¶ÓÁĞ£¬Í¬²½¶ÓÁĞµÄÊµÏÖ
+ * åˆ†å¸ƒå¼é˜Ÿåˆ—ï¼ŒåŒæ­¥é˜Ÿåˆ—çš„å®ç°
  * 
  * @author
  *
@@ -27,12 +27,12 @@ import java.util.concurrent.CountDownLatch;
 public class DistributedQueue<T> {
 	private static Logger logger = LoggerFactory.getLogger(DistributedQueue.class);
 
-	protected final ZooKeeper zooKeeper;// ÓÃÓÚ²Ù×÷zookeeper¼¯Èº
-	protected final String root;// ´ú±í¸ù½Úµã
+	private final ZooKeeper zooKeeper;// ç”¨äºæ“ä½œzookeeperé›†ç¾¤
+	private final String root;// ä»£è¡¨æ ¹èŠ‚ç‚¹
 	private int queueSize;
 	private String startPath = "/queue/start";
 
-	protected static final String Node_NAME = "n_";// Ë³Ğò½ÚµãµÄÃû³Æ
+	private static final String Node_NAME = "n_";// é¡ºåºèŠ‚ç‚¹çš„åç§°
 
 	public DistributedQueue(ZooKeeper zooKeeper, String root, int queueSize) {
 		this.zooKeeper = zooKeeper;
@@ -42,22 +42,22 @@ public class DistributedQueue<T> {
 	}
 
 	/**
-	 * ³õÊ¼»¯¸ùÄ¿Â¼
+	 * åˆå§‹åŒ–æ ¹ç›®å½•
 	 */
 	private void init() {
 		try {
-			Stat stat = zooKeeper.exists(root, false);// ÅĞ¶ÏÒ»ÏÂ¸ùÄ¿Â¼ÊÇ·ñ´æÔÚ
+			Stat stat = zooKeeper.exists(root, false);// åˆ¤æ–­ä¸€ä¸‹æ ¹ç›®å½•æ˜¯å¦å­˜åœ¨
 			if (stat == null) {
 				zooKeeper.create(root, null, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
 			}
-			zooKeeper.delete(startPath, -1); // É¾³ı¶ÓÁĞÂúµÄ±êÖ¾
+			zooKeeper.delete(startPath, -1); // åˆ é™¤é˜Ÿåˆ—æ»¡çš„æ ‡å¿—
 		} catch (Exception e) {
 			logger.error("create rootPath error", e);
 		}
 	}
 
 	/**
-	 * »ñÈ¡¶ÓÁĞµÄ´óĞ¡
+	 * è·å–é˜Ÿåˆ—çš„å¤§å°
 	 * 
 	 * @return
 	 * @throws Exception
@@ -67,7 +67,7 @@ public class DistributedQueue<T> {
 	}
 
 	/**
-	 * ÅĞ¶Ï¶ÓÁĞÊÇ·ñÎª¿Õ
+	 * åˆ¤æ–­é˜Ÿåˆ—æ˜¯å¦ä¸ºç©º
 	 * 
 	 * @return
 	 * @throws Exception
@@ -77,7 +77,7 @@ public class DistributedQueue<T> {
 	}
 
 	/**
-	 * bytes ×ªobject
+	 * bytes è½¬object
 	 * 
 	 * @param bytes
 	 * @return
@@ -100,7 +100,7 @@ public class DistributedQueue<T> {
 	}
 
 	/**
-	 * Object ×ªbyte
+	 * Object è½¬byte
 	 * 
 	 * @param obj
 	 * @return
@@ -125,28 +125,28 @@ public class DistributedQueue<T> {
 	}
 
 	/**
-	 * Ïò¶ÓÁĞÌá¹©Êı¾İ,¶ÓÁĞÂúµÄ»°»á×èÈûµÈ´ıÖ±µ½start±êÖ¾Î»Çå³ı
+	 * å‘é˜Ÿåˆ—æä¾›æ•°æ®,é˜Ÿåˆ—æ»¡çš„è¯ä¼šé˜»å¡ç­‰å¾…ç›´åˆ°startæ ‡å¿—ä½æ¸…é™¤
 	 * 
 	 * @param element
 	 * @return
 	 * @throws Exception
 	 */
 	public boolean offer(T element) throws Exception {
-		// ¹¹½¨Êı¾İ½ÚµãµÄÍêÕûÂ·¾¶
+		// æ„å»ºæ•°æ®èŠ‚ç‚¹çš„å®Œæ•´è·¯å¾„
 		String nodeFullPath = root.concat("/").concat(Node_NAME);
 		try {
 			if (queueSize > size()) {
-				// ´´½¨³Ö¾ÃµÄ½Úµã£¬Ğ´ÈëÊı¾İ
+				// åˆ›å»ºæŒä¹…çš„èŠ‚ç‚¹ï¼Œå†™å…¥æ•°æ®
 				zooKeeper.create(nodeFullPath, ObjectToByte(element), ZooDefs.Ids.OPEN_ACL_UNSAFE,
 						CreateMode.PERSISTENT);
-				// ÔÙÅĞ¶ÏÒ»ÏÂ¶ÓÁĞÊÇ·ñÂú
+				// å†åˆ¤æ–­ä¸€ä¸‹é˜Ÿåˆ—æ˜¯å¦æ»¡
 				if (queueSize > size()) {
-					zooKeeper.delete(startPath, -1); // È·±£²»´æÔÚ
+					zooKeeper.delete(startPath, -1); // ç¡®ä¿ä¸å­˜åœ¨
 				} else {
 					zooKeeper.create(startPath, null, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
 				}
 			} else {
-				// ´´½¨¶ÓÁĞÂúµÄ±ê¼Ç
+				// åˆ›å»ºé˜Ÿåˆ—æ»¡çš„æ ‡è®°
 				if (zooKeeper.exists(startPath, false) != null) {
 					zooKeeper.create(startPath, null, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
 				}
@@ -160,7 +160,7 @@ public class DistributedQueue<T> {
 					}
 				};
 
-				// Èç¹û½Úµã²»´æÔÚ»á³öÏÖÒì³£
+				// å¦‚æœèŠ‚ç‚¹ä¸å­˜åœ¨ä¼šå‡ºç°å¼‚å¸¸
 				zooKeeper.exists(startPath, previousListener);
 				latch.await();
 				offer(element);
@@ -175,7 +175,7 @@ public class DistributedQueue<T> {
 	}
 
 	/**
-	 * ´Ó¶ÓÁĞÈ¡Êı¾İ,µ±ÓĞstart±êÖ¾Î»Ê±£¬¿ªÊ¼È¡Êı¾İ£¬È«²¿È¡ÍêÊı¾İºó²ÅÉ¾³ıstart±êÖ¾
+	 * ä»é˜Ÿåˆ—å–æ•°æ®,å½“æœ‰startæ ‡å¿—ä½æ—¶ï¼Œå¼€å§‹å–æ•°æ®ï¼Œå…¨éƒ¨å–å®Œæ•°æ®åæ‰åˆ é™¤startæ ‡å¿—
 	 * 
 	 * @return
 	 * @throws Exception
@@ -184,7 +184,7 @@ public class DistributedQueue<T> {
 	public T poll() throws Exception {
 
 		try {
-			// ¶ÓÁĞ»¹Ã»Âú
+			// é˜Ÿåˆ—è¿˜æ²¡æ»¡
 			if (zooKeeper.exists(startPath, false) == null) {
 				final CountDownLatch latch = new CountDownLatch(1);
 				final Watcher previousListener = new Watcher() {
@@ -195,10 +195,10 @@ public class DistributedQueue<T> {
 					}
 				};
 
-				// Èç¹û½Úµã²»´æÔÚ»á³öÏÖÒì³£
+				// å¦‚æœèŠ‚ç‚¹ä¸å­˜åœ¨ä¼šå‡ºç°å¼‚å¸¸
 				zooKeeper.exists(startPath, previousListener);
 
-				// Èç¹û½Úµã²»´æÔÚ»á³öÏÖÒì³£
+				// å¦‚æœèŠ‚ç‚¹ä¸å­˜åœ¨ä¼šå‡ºç°å¼‚å¸¸
 				latch.await();
 			}
 
@@ -206,7 +206,7 @@ public class DistributedQueue<T> {
 			if (list.size() == 0) {
 				return null;
 			}
-			// ½«¶ÓÁĞ°´ÕÕÓÉĞ¡µ½´óµÄË³ĞòÅÅĞò
+			// å°†é˜Ÿåˆ—æŒ‰ç…§ç”±å°åˆ°å¤§çš„é¡ºåºæ’åº
 			Collections.sort(list, new Comparator<String>() {
 				public int compare(String lhs, String rhs) {
 					return getNodeNumber(lhs, Node_NAME).compareTo(getNodeNumber(rhs, Node_NAME));
@@ -214,7 +214,7 @@ public class DistributedQueue<T> {
 			});
 
 			/**
-			 * ½«¶ÓÁĞÖĞµÄÔªËØ×öÑ­»·£¬È»ºó¹¹½¨ÍêÕûµÄÂ·¾¶£¬ÔÚÍ¨¹ıÕâ¸öÂ·¾¶È¥¶ÁÈ¡Êı¾İ
+			 * å°†é˜Ÿåˆ—ä¸­çš„å…ƒç´ åšå¾ªç¯ï¼Œç„¶åæ„å»ºå®Œæ•´çš„è·¯å¾„ï¼Œåœ¨é€šè¿‡è¿™ä¸ªè·¯å¾„å»è¯»å–æ•°æ®
 			 */
 			for (String nodeName : list) {
 				String nodeFullPath = root.concat("/").concat(nodeName);
@@ -234,7 +234,7 @@ public class DistributedQueue<T> {
 	}
 
 	/**
-	 * ½ØÈ¡½ÚµãµÄÊı×ÖµÄ·½·¨
+	 * æˆªå–èŠ‚ç‚¹çš„æ•°å­—çš„æ–¹æ³•
 	 * 
 	 * @param str
 	 * @param nodeName
