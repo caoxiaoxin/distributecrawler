@@ -3,6 +3,7 @@ package com.wzhqueue;
 import org.I0Itec.zkclient.ExceptionUtil;
 import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.exception.ZkNoNodeException;
+import org.I0Itec.zkclient.serialize.SerializableSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,16 +15,16 @@ import java.util.List;
  * 分布式队列，生产者，消费者的实现
  *
  * @param <T>
- * @author
+ * @author zephery
  */
 public class DistributedSimpleQueue<T> {
 
     private static Logger logger = LoggerFactory.getLogger(BaseDistributedLock.class);
 
-    protected final ZkClient zkClient;//用于操作zookeeper集群
-    protected final String root;//代表根节点
+    private final ZkClient zkClient;//用于操作zookeeper集群
+    private final String root;//代表根节点
 
-    protected static final String Node_NAME = "n_";//顺序节点的名称
+    private static final String Node_NAME = "n_";//顺序节点的名称
 
 
     public DistributedSimpleQueue(ZkClient zkClient, String root) {
@@ -57,7 +58,8 @@ public class DistributedSimpleQueue<T> {
         String nodeFullPath = root.concat("/").concat(Node_NAME);
         try {
             //创建持久的节点，写入数据
-            zkClient.createPersistentSequential(nodeFullPath, element.toString());
+            String string = element.toString();
+            zkClient.createPersistentSequential(nodeFullPath, string);
         } catch (ZkNoNodeException e) {
             zkClient.createPersistent(root);
             offer(element);
@@ -84,12 +86,10 @@ public class DistributedSimpleQueue<T> {
                     return getNodeNumber(lhs, Node_NAME).compareTo(getNodeNumber(rhs, Node_NAME));
                 }
             });
-
             /**
              * 将队列中的元素做循环，然后构建完整的路径，在通过这个路径去读取数据
              */
             for (String nodeName : list) {
-
                 String nodeFullPath = root.concat("/").concat(nodeName);
                 try {
                     T node = (T) zkClient.readData(nodeFullPath);
@@ -99,9 +99,7 @@ public class DistributedSimpleQueue<T> {
                     logger.error("", e);
                 }
             }
-
             return null;
-
         } catch (Exception e) {
             throw ExceptionUtil.convertToRuntimeException(e);
         }
@@ -119,4 +117,11 @@ public class DistributedSimpleQueue<T> {
 
     }
 
+    public static void main(String[] args) throws Exception {
+        ZkClient zkClient = new ZkClient("119.23.46.71:2181", 50000, 50000, new SerializableSerializer());
+        DistributedSimpleQueue<String> queue = new DistributedSimpleQueue<>(zkClient, "/Queue");
+        queue.offer("jijeifaoew");
+        String cu = queue.poll();
+        System.out.println(cu);
+    }
 }
