@@ -11,7 +11,6 @@
     <modules>
         <module>wzhqueue</module>
         <module>wzhredis</module>
-        <module>common</module>
     </modules>
     <build>
         <finalName>distributeCrawler</finalName>

@@ -38,7 +38,7 @@ public class Crawler {
                     queue.offer(uurl);
                     System.out.println(uurl);
                     count = count + 1;
-                    if (count > 20) {
+                    if (count > 0) {
                         return;
                     }
                 }

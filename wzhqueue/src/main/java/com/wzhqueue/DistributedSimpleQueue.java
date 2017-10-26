@@ -59,6 +59,7 @@ public class DistributedSimpleQueue<T> {
         try {
             //创建持久的节点，写入数据
             String string = element.toString();
+            System.out.println("push to queue" + string);
             zkClient.createPersistentSequential(nodeFullPath, string);
         } catch (ZkNoNodeException e) {
             zkClient.createPersistent(root);
@@ -93,6 +94,7 @@ public class DistributedSimpleQueue<T> {
                 String nodeFullPath = root.concat("/").concat(nodeName);
                 try {
                     T node = (T) zkClient.readData(nodeFullPath);
+                    Thread.sleep(60 * 1000);
                     zkClient.delete(nodeFullPath);
                     return node;
                 } catch (ZkNoNodeException e) {
