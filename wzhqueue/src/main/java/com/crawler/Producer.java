@@ -27,7 +27,7 @@ public class Producer {
             .defaultData(null)
             .build();
     private static SimpleDistributedQueue queue = new SimpleDistributedQueue(client, "/Queue");
-    private static Integer i = 0;
+    private static Integer j = 0;
 
     public static void begin(String url) {
         try {
@@ -42,15 +42,14 @@ public class Producer {
         Elements elements = Jsoup.parse(content).select("a.titlelnk");
         for (Element element : elements) {
             String url = element.attr("href");
-            logger.info(url + " " + String.valueOf(i));
-            i = i + 1;
+            logger.info(url + " " + String.valueOf(j++));
             queue.offer(url.getBytes());
         }
     }
 
     public static void main(String[] args) {
         client.start();
-        for (int i = 0; i < 200; i++) {
+        for (int i = 0; i < 100; i++) {
             begin("https://www.cnblogs.com/#p" + String.valueOf(i));
         }
     }
