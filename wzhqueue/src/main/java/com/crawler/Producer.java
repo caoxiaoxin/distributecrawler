@@ -41,6 +41,7 @@ public class Producer {
         Elements elements = Jsoup.parse(content).select("a.titlelnk");
         for (Element element : elements) {
             String url = element.attr("href");
+            logger.info(url);
             queue.offer(url.getBytes());
         }
     }
