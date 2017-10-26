@@ -25,11 +25,15 @@ public class Consumer {
             .defaultData(null)
             .build();
     private static SimpleDistributedQueue queue = new SimpleDistributedQueue(client, "/Queue");
+    private static Integer i = 0;
 
     public static void begin() {
         try {
-            System.out.println(client.getChildren().forPath("/Queue").size());
-            crawler();
+            while (client.getChildren().forPath("/Queue").size() > 0) {
+                crawler();
+                i = i + 1;
+                logger.info(String.valueOf(i) + " is finished");
+            }
         } catch (Exception e) {
             logger.error("", e);
         }
