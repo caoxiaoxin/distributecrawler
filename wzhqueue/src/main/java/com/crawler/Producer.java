@@ -27,6 +27,7 @@ public class Producer {
             .defaultData(null)
             .build();
     private static SimpleDistributedQueue queue = new SimpleDistributedQueue(client, "/Queue");
+    private static Integer i = 0;
 
     public static void begin(String url) {
         try {
@@ -41,7 +42,8 @@ public class Producer {
         Elements elements = Jsoup.parse(content).select("a.titlelnk");
         for (Element element : elements) {
             String url = element.attr("href");
-            logger.info(url);
+            logger.info(url + " " + String.valueOf(i));
+            i = i + 1;
             queue.offer(url.getBytes());
         }
     }
