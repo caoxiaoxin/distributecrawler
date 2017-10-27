@@ -39,18 +39,21 @@ public class Producer {
     }
 
     public static void resolveweb(String content) throws Exception {
-        Elements elements = Jsoup.parse(content).select("a.titlelnk");
+        Elements elements = Jsoup.parse(content).select("a");
         for (Element element : elements) {
             String url = element.attr("href");
-            logger.info(url + " " + String.valueOf(j++));
-            queue.offer(url.getBytes());
+            if (url != null) {
+                logger.info(url + " " + String.valueOf(j++));
+                queue.offer(url.getBytes());
+            }
         }
     }
 
     public static void main(String[] args) {
         client.start();
-        for (int i = 0; i < 100; i++) {
-            begin("https://www.cnblogs.com/#p" + String.valueOf(i));
-        }
+//        for (int i = 0; i < 100; i++) {
+//            begin("https://www.cnblogs.com/#p" + String.valueOf(i));
+//        }
+        begin("http://news.sina.com.cn/");
     }
 }

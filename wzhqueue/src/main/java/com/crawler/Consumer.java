@@ -19,7 +19,7 @@ import java.util.concurrent.*;
 public class Consumer {
     //logger
     private static final Logger logger = LoggerFactory.getLogger(Consumer.class);
-    public static final CuratorFramework client = CuratorFrameworkFactory.builder().connectString("119.23.46.71:2181")
+    private static final CuratorFramework client = CuratorFrameworkFactory.builder().connectString("119.23.46.71:2181")
             .sessionTimeoutMs(30000)
             .connectionTimeoutMs(30000)
             .canBeReadOnly(false)
@@ -29,7 +29,8 @@ public class Consumer {
     private static SimpleDistributedQueue queue = new SimpleDistributedQueue(client, "/Queue");
     private static Integer i = 0;
     private static final Integer CORE = Runtime.getRuntime().availableProcessors();
-    private static final BlockingQueue<Runnable> queuelength = new ArrayBlockingQueue<>(100);
+    //声明为一个数组型的阻塞队列，这里限制大小为
+    private static final BlockingQueue<Runnable> queuelength = new ArrayBlockingQueue<>(1000);
 
     static class CBCrawler implements Runnable {
         private String url;
@@ -42,6 +43,15 @@ public class Consumer {
         public void run() {
             String content = HttpHelper.getInstance().get(url);
             logger.info(url + " " + Jsoup.parse(content).title());
+            sleepUtil(4);
+        }
+
+        public static void sleepUtil(Integer time) {
+            try {
+                Thread.sleep(time * 1000);
+            } catch (Exception e) {
+                logger.error("线程sleep异常", e);
+            }
         }
     }
 
@@ -56,7 +66,9 @@ public class Consumer {
                 i = i + 1;
                 logger.info(String.valueOf(i) + " is finished\n" + " queue size is" + queuelength.size());
             }
-            es.shutdown();
+            if (!es.isShutdown()) {
+                es.shutdown();
+            }
         } catch (Exception e) {
             logger.error("", e);
         }
@@ -67,6 +79,9 @@ public class Consumer {
         client.start();
         begin();
         client.close();
-        logger.info("take time: " + String.valueOf(System.currentTimeMillis() - start));
+        logger.info("start time: " + start);
+        long end = System.currentTimeMillis();
+        logger.info("end time: " + end);
+        logger.info("take time: " + String.valueOf(end - start));
     }
 }

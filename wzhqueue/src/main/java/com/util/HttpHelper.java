@@ -32,9 +32,9 @@ import java.util.Map;
 
 
 /**
- * 重写isRedirected 目的机制重定向
- *
- * @author zephery
+ * @author Zephery
+ * @since 2017/10/26 8:56
+ * Description:
  */
 public class HttpHelper {
 
@@ -257,103 +257,6 @@ public class HttpHelper {
     public boolean isAborted(String url) {
         return false;
     }
-
-//	public String get(String url, Map<String,String> headers, Proxy proxy, CookieStore cookieStore){
-//		if(null==url || "".equals(url)) {
-//			return null;
-//		}
-//		//创建httpclient请求方式
-//		HttpGet httpGet = new HttpGet("/");
-//
-//        CredentialsProvider credentialsProvider = null;
-//        HttpHost httpHost = new HttpHost(url);
-//        HttpHost proxyHost = null;
-//        AuthCache authCache = null;
-//		if(proxy != null) {
-//            proxyHost = new HttpHost(proxy.getHost(),proxy.getPort());
-//            credentialsProvider = new BasicCredentialsProvider();
-//            credentialsProvider.setCredentials(new AuthScope(proxy.getHost(),proxy.getPort()),
-////                    new UsernamePasswordCredentials(proxy.getUserName(),proxy.getPassWd()));
-//            credentialsProvider.setCredentials(AuthScope.ANY,new UsernamePasswordCredentials(proxy.getUserName(),proxy.getPassWd()));
-////            authCache = new BasicAuthCache();
-////            BasicScheme basicScheme = new BasicScheme();
-////            authCache.put(targetHost,basicScheme);
-//
-//		}
-//
-//
-//		CloseableHttpResponse response = null;
-//
-//		httpGet.setHeader("Accept", "*/*");
-//		httpGet.setHeader("Accept-Language", "zh-CN,zh;q=0.8,en;q=0.6");
-//		httpGet.setHeader("Connection", "keep-alive");
-//		httpGet.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.71 Safari/537.36");
-//
-//		if(headers != null && headers.size() > 0) {
-//			for(String headName : headers.keySet()) {
-//				if(headName.toLowerCase().equals("cookie") || headName.toLowerCase().equals("user-agent")) {
-//					//cookie和userAgent用其它处理方式
-//					continue;
-//				}
-//				httpGet.setHeader(headName, headers.get(headName));
-//			}
-//		}
-//
-//		try {
-//			HttpContext httpContext = new BasicHttpContext();
-//			httpContext.setAttribute(HttpClientContext.COOKIE_SPEC, CookieSpecs.IGNORE_COOKIES);
-//            if(targetHost != null){
-//                httpContext.setAttribute(HttpClientContext.CREDS_PROVIDER,credentialsProvider);
-////                httpContext.setAttribute(HttpClientContext.AUTH_CACHE,authCache);
-////                httpContext.setAttribute(HttpClientContext.CREDS_PROVIDER,credentialsProvider);
-//            }
-//			if(cookieStore != null) {
-//				httpContext.setAttribute(HttpClientContext.COOKIE_STORE, cookieStore);
-//			} else {
-////				BasicCookieStore cookieStore = (BasicCookieStore)httpContext.getAttribute(HttpClientContext.COOKIE_STORE);
-////				proxy.setCookieStore(cookieStore);
-//				BasicCookieStore basicCookieStore = new BasicCookieStore();
-//				httpContext.setAttribute(HttpClientContext.COOKIE_STORE, basicCookieStore);
-//			}
-//
-//
-//
-//			response = httpClient.execute(targetHost,httpGet, httpContext);
-//
-//			Header[] reHeaders = response.getAllHeaders();
-//			int statusCode = response.getStatusLine().getStatusCode();
-//			if(log.isDebugEnabled()) {
-//				log.debug("response code is =>"+statusCode);
-//			}
-//			HttpEntity entity = response.getEntity();
-//            String result = null;
-//            if (entity != null){
-//                result = EntityUtils.toString(entity, "utf-8");
-//            }
-//            EntityUtils.consume(entity);
-//
-//			if(cookieStore == null) {
-//			    cookieStore = (BasicCookieStore)httpContext.getAttribute(HttpClientContext.COOKIE_STORE);
-//			}
-//			response.close();
-//			return result;
-//		} catch(Exception e) {
-//			e.printStackTrace();
-//			return null;
-//		} finally{
-//			httpGet.releaseConnection();
-//			if(null != response){
-//				try {
-//					//关闭response
-//					response.close();
-//				} catch (IOException e) {
-//					// TODO 这里写异常处理的代码
-//					e.printStackTrace();
-//				}
-//			}
-//		}
-//	}
-
 
     public String get(String url) {
         if (StringUtils.isBlank(url)) {
