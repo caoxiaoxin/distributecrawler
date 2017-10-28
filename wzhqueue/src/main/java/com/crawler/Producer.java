@@ -1,6 +1,7 @@
 package com.crawler;
 
 import com.util.HttpHelper;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.queue.SimpleDistributedQueue;
@@ -26,7 +27,7 @@ public class Producer {
             .retryPolicy(new ExponentialBackoffRetry(1000, Integer.MAX_VALUE))
             .defaultData(null)
             .build();
-    private static SimpleDistributedQueue queue = new SimpleDistributedQueue(client, "/Queue");
+    private static SimpleDistributedQueue queue = new SimpleDistributedQueue(client, "/SinaQueue");
     private static Integer j = 0;
 
     public static void begin(String url) {
@@ -42,7 +43,7 @@ public class Producer {
         Elements elements = Jsoup.parse(content).select("a");
         for (Element element : elements) {
             String url = element.attr("href");
-            if (url != null) {
+            if (StringUtils.isNotEmpty(url) && !url.contains("javascript") && !url.contains("jump")) {
                 logger.info(url + " " + String.valueOf(j++));
                 queue.offer(url.getBytes());
             }
@@ -54,6 +55,6 @@ public class Producer {
 //        for (int i = 0; i < 100; i++) {
 //            begin("https://www.cnblogs.com/#p" + String.valueOf(i));
 //        }
-        begin("http://news.sina.com.cn/");
+        begin("http://www.sina.com.cn/");
     }
 }

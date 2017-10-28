@@ -262,13 +262,9 @@ public class HttpHelper {
         if (StringUtils.isBlank(url)) {
             return null;
         }
-
         HttpContext httpContext = new BasicHttpContext();
-
         HttpGet httpGet = new HttpGet(url);
-
         CloseableHttpResponse response = null;
-
         try {
             response = httpClient.execute(httpGet, httpContext);
             int statusCode = response.getStatusLine().getStatusCode();

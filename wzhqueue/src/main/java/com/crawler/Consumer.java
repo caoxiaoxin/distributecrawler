@@ -26,7 +26,7 @@ public class Consumer {
             .retryPolicy(new ExponentialBackoffRetry(1000, Integer.MAX_VALUE))
             .defaultData(null)
             .build();
-    private static SimpleDistributedQueue queue = new SimpleDistributedQueue(client, "/Queue");
+    private static SimpleDistributedQueue queue = new SimpleDistributedQueue(client, "/SinaQueue");
     private static Integer i = 0;
     private static final Integer CORE = Runtime.getRuntime().availableProcessors();
     //声明为一个数组型的阻塞队列，这里限制大小为
