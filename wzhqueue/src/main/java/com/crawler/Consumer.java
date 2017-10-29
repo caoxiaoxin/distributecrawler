@@ -20,8 +20,8 @@ public class Consumer {
     //logger
     private static final Logger logger = LoggerFactory.getLogger(Consumer.class);
     private static final CuratorFramework client = CuratorFrameworkFactory.builder().connectString("119.23.46.71:2181")
-            .sessionTimeoutMs(30000)
-            .connectionTimeoutMs(30000)
+            .sessionTimeoutMs(1000)
+            .connectionTimeoutMs(1000)
             .canBeReadOnly(false)
             .retryPolicy(new ExponentialBackoffRetry(1000, Integer.MAX_VALUE))
             .defaultData(null)
@@ -60,7 +60,7 @@ public class Consumer {
             ExecutorService es = new ThreadPoolExecutor(CORE, CORE,
                     0L, TimeUnit.MILLISECONDS,
                     queuelength);
-            while (client.getChildren().forPath("/Queue").size() > 0) {
+            while (client.getChildren().forPath("/SinaQueue").size() > 0) {
                 CBCrawler crawler = new CBCrawler(new String(queue.take()));
                 es.submit(crawler);
                 i = i + 1;
