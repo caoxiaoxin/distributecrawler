@@ -21,13 +21,9 @@ public class Producer {
     //logger
     private static final Logger logger = LoggerFactory.getLogger(Producer.class);
     public static final CuratorFramework client = CuratorFrameworkFactory.builder().connectString("119.23.46.71:2181")
-            .sessionTimeoutMs(1000)
-            .connectionTimeoutMs(1000)
-            .canBeReadOnly(false)
             .retryPolicy(new ExponentialBackoffRetry(1000, Integer.MAX_VALUE))
-            .defaultData(null)
             .build();
-    private static SimpleDistributedQueue queue = new SimpleDistributedQueue(client, "/Queue");
+    private static SimpleDistributedQueue queue = new SimpleDistributedQueue(client, "/SinaQueue");
     private static Integer j = 0;
 
     public static void begin(String url) {
@@ -50,11 +46,14 @@ public class Producer {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         client.start();
-        for (int i = 0; i < 100; i++) {
-            begin("https://www.cnblogs.com/#p" + String.valueOf(i));
+        if (!client.getChildren().forPath("/SinaQueue").isEmpty()) {
+            client.delete().deletingChildrenIfNeeded().forPath("/SinaQueue");
         }
-//        begin("http://www.sina.com.cn/");
+//        for (int i = 0; i < 100; i++) {
+//            begin("https://www.cnblogs.com/#p" + String.valueOf(i));
+//        }
+        begin("http://www.sina.com.cn/");
     }
 }

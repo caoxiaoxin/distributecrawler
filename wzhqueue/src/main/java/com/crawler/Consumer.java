@@ -30,7 +30,7 @@ public class Consumer {
     private static Integer i = 0;
     private static final Integer CORE = Runtime.getRuntime().availableProcessors();
     //声明为一个数组型的阻塞队列，这里限制大小为
-    private static final BlockingQueue<Runnable> queuelength = new ArrayBlockingQueue<>(1000);
+    private static final BlockingQueue<Runnable> queuelength = new ArrayBlockingQueue<>(2000);
 
     static class CBCrawler implements Runnable {
         private String url;
